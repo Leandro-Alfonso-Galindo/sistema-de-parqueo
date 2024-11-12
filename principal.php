@@ -54,6 +54,7 @@ include('layout/admin/datos_usuario_sesion.php');
                       $id_map = $mapeo['id_map'];
                       $nro_espacio = $mapeo['nro_espacio'];
                       $estado_espacio = $mapeo['estado_espacio'];
+                      
                       if($estado_espacio == "LIBRE") {
                         ?>
                         <div class="col">
@@ -171,8 +172,19 @@ include('layout/admin/datos_usuario_sesion.php');
                                               alert('Debe llenar el campo rut/ci de cliente');
                                               $('#rut_ci_cliente<?php echo $id_map;?>').focus();
                                           }else {
-                                              var url = "tickets/controller_registrar_tickets.php";
-                                              $.get(url, 
+
+                                              var url_1 = "parqueo/controller_cambiar_estado_ocupado.php";
+                                              $.get(url_1, {cuviculo:cuviculo}, function(datos) {
+                                                  $('#respuesta').htnl(datos)
+                                              });
+
+                                              var url_2 = "clientes/controller_registrar_clientes.php";
+                                              $.get(url_2, {nombre_cliente:nombre_cliente, rut_ci:rut_ci, placa:placa}, function(datos) {
+                                                  $('#respuesta').htnl(datos)
+                                              });
+
+                                              var url_3 = "tickets/controller_registrar_tickets.php";
+                                              $.get(url_3, 
                                               {
                                                 placa:placa, 
                                                 nombre_cliente:nombre_cliente, 
@@ -184,6 +196,7 @@ include('layout/admin/datos_usuario_sesion.php');
                                               }, function(datos) {
                                                   $('#respuesta_ticket').html(datos);
                                               });
+
                                           }
 
                                       });
@@ -204,9 +217,96 @@ include('layout/admin/datos_usuario_sesion.php');
                         <div class="col">
                           <center>
                             <h2><?php echo $nro_espacio;?></h2>
-                            <button class="btn btn-danger">
+                            <button class="btn btn-danger" id="btn_ocupado<?php echo $id_map;?>" data-toggle="modal" data-target="#exampleModal<?php echo $id_map;?>">
                               <img src="<?php echo $URL;?>/public/imagenes/auto.jpg" width="60px" alt="">
                             </button>
+
+                            <?php
+                            
+                            $query_datos_clientes = $pdo->prepare("SELECT * FROM tb_tickets WHERE cuviculo = '$nro_espacio' AND estado = '1'");
+            
+                            $query_datos_clientes->execute();
+            
+                            $datos_clientes = $query_datos_clientes->fetchALL(PDO::FETCH_ASSOC);
+                            foreach($datos_clientes as $datos_cliente) {
+                              $id_ticket = $datos_cliente['id_ticket'];
+                              $placa_auto = $datos_cliente['placa_auto'];
+                              $nombre_cliente = $datos_cliente['nombre_cliente'];
+                              $rut_ci = $datos_cliente['rut_ci'];
+                              $cuviculo = $datos_cliente['cuviculo'];
+                              $fecha_ingreso = $datos_cliente['fecha_ingreso'];
+                              $hora_ingreso = $datos_cliente['hora_ingreso'];
+                              $user_sesion = $datos_cliente['user_sesion'];
+                            } ?>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal<?php echo $id_map;?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Datos del cliente</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    
+                                    <div class="form-group row">
+                                          <label for="staticEmail" class="col-sm-4 col-form-label">Placa:</label>
+                                          <div class="col-sm-8">
+                                            <input type="text" style="text-transform: uppercase;" class="form-control" value="<?php echo $placa_auto?>" id="placa_buscar<?php echo $id_map;?>" readonly>
+                                          </div>
+                                          
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-4 col-form-label">Nombre:</label>
+                                            <div class="col-sm-8">
+                                                <input id="nombre_cliente<?php echo $id_map;?>" value="<?php echo $nombre_cliente?>" type="text" class="form-control" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label for="" class="col-sm-4 col-form-label">RUT/CI: </label>
+                                            <div class="col-sm-8">
+                                                <input id="rut_ci<?php echo $id_map;?>" value="<?php echo $rut_ci?>" type="text" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group row">
+                                          <label for="" class="col-sm-4 col-form-label">Fecha de Ingreso:</label>
+                                          <div class="col-sm-8">
+                                            <input id="fecha_ingreso<?php echo $id_map;?>" value="<?php echo $fecha_ingreso?>" type="text" class="form-control" readonly>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                          <label for="inputPassword" class="col-sm-4 col-form-label">Hora de Ingreso:</label>
+                                          <div class="col-sm-8">
+                                            <input id="hora_ingreso<?php echo $id_map;?>" value="<?php echo $hora_ingreso?>" type="text" class="form-control" readonly>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                          <label for="inputPassword" class="col-sm-4 col-form-label">Cuviculo:</label>
+                                          <div class="col-sm-8">
+                                            <input id="cuviculo<?php echo $id_map;?>" value="<?php echo $cuviculo?>" type="text" class="form-control" readonly>
+                                          </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                                      <a href="tickets/controller_cancelar_ticket.php?id=<?php echo $id_ticket;?>&&cuviculo=<?php echo $cuviculo;?>" class="btn btn-danger">Cancelar Ticket</a>
+                                      <a href="tickets/reimprimir_ticket.php?id=<?php echo $id_ticket;?>" class="btn btn-primary">Volver a Imprimir</a>
+                                      <button type="button" class="btn btn-success">Facturar</button>
+                                    </div>
+                                    
+                                  </div>
+                                </div>
+                              </div>
+
                             <p><?php echo $estado_espacio;?></p>
                           </center>
                         </div>
