@@ -76,8 +76,8 @@ include('layout/admin/datos_usuario_sesion.php');
                                   <div class="modal-body">
                                     <div class="form-group">
                                       <div class="form-group row">
-                                        <label for="staticEmail" class="col-sm-2 col-form-label">Placa:</label>
-                                        <div class="col-sm-7">
+                                        <label for="staticEmail" class="col-sm-3 col-form-label">Placa: <span style="color: red">*</span></label>
+                                        <div class="col-sm-6">
                                           <input type="text" style="text-transform: uppercase;" class="form-control" id="placa_buscar<?php echo $id_map;?>">
                                         </div>
                                         <div class="col-sm-3">                                         
@@ -90,13 +90,14 @@ include('layout/admin/datos_usuario_sesion.php');
                                           <script>
                                             $('#btn_buscar_cliente<?php echo $id_map;?>').click(function(){
                                               var placa = $('#placa_buscar<?php echo $id_map;?>').val();
+                                              var id_map = "<?php echo $id_map; ?>";
 
                                               if(placa == "") {
                                                 alert('Debe llenar el campo placa');
                                                 $('#placa_buscar<?php echo $id_map;?>').focus();
                                               }else {
                                                 var url = "clientes/controller_buscar_cliente.php";
-                                                $.get(url, {placa:placa}, function(datos) {
+                                                $.get(url, {placa:placa, id_map:id_map}, function(datos) {
                                                   $('#respuesta_buscar_cliente<?php echo $id_map;?>').html(datos);
                                                 });
                                               }
@@ -119,7 +120,7 @@ include('layout/admin/datos_usuario_sesion.php');
                                           $mes = date("m");
                                           $ano = date("Y");
                                           ?>
-                                          <input type="date" class="form-control" value="<?php echo $ano."-".$mes."-".$dia;?>">
+                                          <input id="fecha_ingreso<?php echo $id_map;?>" type="date" class="form-control" value="<?php echo $ano."-".$mes."-".$dia;?>">
                                         </div>
                                       </div>
 
@@ -131,16 +132,66 @@ include('layout/admin/datos_usuario_sesion.php');
                                           $hora = date("H");
                                           $minutos = date("i");
                                           ?>
-                                          <input type="time" class="form-control" value="<?php echo $hora.":".$minutos;?>">
+                                          <input id="hora_ingreso<?php echo $id_map;?>" type="time" class="form-control" value="<?php echo $hora.":".$minutos;?>">
                                         </div>
                                       </div>
+
+                                      <div class="form-group row">
+                                        <label for="inputPassword" class="col-sm-4 col-form-label">Cuviculo:</label>
+                                        <div class="col-sm-8">
+                                          <input id="cuviculo<?php echo $id_map;?>" type="text" class="form-control" value="<?php echo $nro_espacio;?>">
+                                        </div>
+                                      </div>
+
+                                      
 
                                     </div>
                                   </div>
                                   <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-primary">Imprimir ticket</button>
+                                    <button type="button" class="btn btn-primary" id="btn_registrar_ticket<?php echo $id_map;?>">Imprimir ticket</button>
+                                    <script>
+                                      $('#btn_registrar_ticket<?php echo $id_map;?>').click(function(){
+                                          
+                                          var placa = $('#placa_buscar<?php echo $id_map;?>').val();
+                                          var nombre_cliente = $('#nombre_cliente<?php echo $id_map;?>').val(); 
+                                          var rut_ci = $('#rut_ci<?php echo $id_map;?>').val();
+                                          var cuviculo = $('#cuviculo<?php echo $id_map;?>').val();
+                                          var fecha_ingreso = $('#fecha_ingreso<?php echo $id_map;?>').val();
+                                          var hora_ingreso = $('#hora_ingreso<?php echo $id_map;?>').val();
+                                          var user_sesion = '<?php echo $usuario_sesion; ?>';
+
+                                          if(placa == "") {
+                                              alert('Debe llenar el campo placa');
+                                              $('#placa_buscar<?php echo $id_map;?>').focus();
+                                          }else if(nombre_cliente == "") {
+                                              alert('Debe llenar el campo nombre de cliente');
+                                              $('#nombre_cliente<?php echo $id_map;?>').focus();
+                                          }else if(rut_ci == "") {
+                                              alert('Debe llenar el campo rut/ci de cliente');
+                                              $('#rut_ci_cliente<?php echo $id_map;?>').focus();
+                                          }else {
+                                              var url = "tickets/controller_registrar_tickets.php";
+                                              $.get(url, 
+                                              {
+                                                placa:placa, 
+                                                nombre_cliente:nombre_cliente, 
+                                                rut_ci:rut_ci, 
+                                                cuviculo:cuviculo, 
+                                                fecha_ingreso:fecha_ingreso, 
+                                                hora_ingreso:hora_ingreso, 
+                                                user_sesion:user_sesion
+                                              }, function(datos) {
+                                                  $('#respuesta_ticket').html(datos);
+                                              });
+                                          }
+
+                                      });
+                                    </script>
                                   </div>
+                                </div>
+                                <div id="respuesta_ticket">
+
                                 </div>
                               </div>
                             </div>
@@ -189,3 +240,4 @@ include('layout/admin/datos_usuario_sesion.php');
 
 </body>
 </html>
+
