@@ -22,7 +22,45 @@ foreach($informacions as $informacion) {
 	$pais = $informacion['pais'];
 }
 
+//RESCATAR LA INFO DE LA FACTURA
+$query_facturas = $pdo->prepare("SELECT * FROM tb_facturaciones WHERE estado = '1'");
 
+$query_facturas->execute();
+
+$facturas = $query_facturas->fetchALL(PDO::FETCH_ASSOC);
+foreach($facturas as $factura) {
+	$id_facturacion = $factura['id_facturacion'];
+    $id_informacion = $factura['id_informacion'];
+    $nro_factura = $factura['nro_factura'];
+    $id_cliente = $factura['id_cliente'];
+    $fecha_factura = $factura['fecha_factura'];
+    $fecha_ingreso = $factura['fecha_ingreso'];
+    $hora_ingreso = $factura['hora_ingreso'];
+    $fecha_salida = $factura['fecha_salida'];
+    $hora_salida = $factura['hora_salida'];
+    $tiempo = $factura['tiempo'];
+    $cuviculo = $factura['cuviculo'];
+    $detalle = $factura['detalle'];
+    $precio = $factura['precio'];
+    $cantidad = $factura['cantidad'];
+    $total = $factura['total'];
+    $monto_total = $factura['monto_total'];
+    $monto_literal = $factura['monto_literal'];
+    $user_sesion = $factura['user_sesion'];
+    $qr = $factura['qr'];
+};
+
+$query_clientes = $pdo->prepare("SELECT * FROM tb_clientes WHERE id_cliente = '$id_cliente' AND estado = '1'");
+                    
+$query_clientes->execute();
+
+$datos_clientes = $query_clientes->fetchALL(PDO::FETCH_ASSOC);
+
+foreach($datos_clientes as $datos_cliente) {
+    $nombre_cliente = $datos_cliente['nombre_cliente'];
+    $rut_ci_cliente = $datos_cliente['rut_ci_cliente'];
+    $placa_auto = $datos_cliente['placa_auto'];
+}
 
 
 // create new PDF document
@@ -77,16 +115,16 @@ $html = '
 		'.$departamento_ciudad.' - '.$pais.' <br>
 			--------------------------------------------------------------------------------- <br>
         <div style="text-align: left">
-            <b >FACTURA Nro.</b> 000001 <br>
+            <b >FACTURA Nro.</b> '.$nro_factura.' <br>
             ----------------------------------------------------------------------------------- <br>
 			<b>DATOS DEL CLIENTE</b> <br>
-			<b>SEÑOR(A)</b> EJEMPLO <br>
-			<b>RUT/CI:</b> 123456789 <br>
-            <b>Fecha de la Factura:</b> La Ligua, 12 de Noviembre de 2024 <br>
+			<b>SEÑOR(A)</b> '.$nombre_cliente.' <br>
+			<b>RUT/CI:</b> '.$rut_ci_cliente.' <br>
+            <b>Fecha de la Factura:</b> '.$fecha_factura.' <br>
 			----------------------------------------------------------------------------------- <br>
-			<b>De:</b> 12/11/2024  <b>Hora:</b> 18:00 <br>
-            <b>A:</b> 12/11/2024  <b>Hora:</b> 20:00 <br>
-            <b>Tiempo:</b> 2 horas en el cuviculo 10<br>
+			<b>De:</b> '.$fecha_ingreso.'  <b>Hora:</b> '.$hora_ingreso.' <br>
+            <b>A:</b> '.$fecha_salida.' <b>Hora:</b> '.$hora_salida.' <br>
+            <b>Tiempo:</b> '.$tiempo.'<br>
             ----------------------------------------------------------------------------------- <br>
             <table border="1" cellPadding="2">
                 <tr>
@@ -97,31 +135,30 @@ $html = '
                 </tr>
                 <tr>
                     <td style="text-align: center">
-                        Servicio de parqueo de 2 horas
+                        '.$detalle.'
                     </td>
                     <td style="text-align: center">
-                        CLP $100
+                        '.$precio.'
                     </td>
                     <td style="text-align: center">
-                        1
+                        '.$cantidad.'
                     </td>
                     <td style="text-align: center">
-                        CLP $100
+                        '.$total.'
                     </td>
                 </tr>
             </table>
             <p style="text-align: right">
-                <b>Monto Total:</b> 
+                <b>Monto Total:</b> $'.$monto_total.' CLP
             </p>
             <p>
-                <b>Son: Cien 00/100 CLP</b>
+                <b>Son:</b> '.$monto_literal.'
             </p>
             ----------------------------------------------------------------------------------- <br>
-			<b>USUARIO</b>: LEANDRO GALINDO <br><br><br><br><br><br><br><br>
+			<b>USUARIO</b>: '.$user_sesion.' <br><br><br><br><br><br><br>
             
             <p style="text-align: center">"ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAIS, EL USO ILEGITIMO SERA SANCIONADO POR LA LEY"</p>
             <p style="text-align: center"><b>GRACIAS POR SU PREFERENCIA</b></p>
-			
 		</div>
 		
 	</p>
@@ -142,16 +179,15 @@ $style = array(
     'module_width' => 1, // width of a single module in points
     'module_height' => 1 // height of a single module in points
 );
-$QR = 'Factura realizada por el sistema de parqueo LA LIGUA, al cliente -cliente- con rut: -rut-,
-con el vehiculo de nro de placa: -placa- y esta factura se genero en -fecha- a hora: -hora-';
-$pdf->write2DBarcode($QR, 'QRCODE, L', 23, 112, 30, 30, $style);
+
+$pdf->write2DBarcode($qr, 'QRCODE, L', 27, 115, 25, 25, $style);
 
 
 
 
 
 //Close and output PDF document
-$pdf->Output('example_002.pdf', 'I');
+$pdf->Output('factura.pdf', 'I');
 
 //============================================================+
 // END OF FILE
