@@ -20,6 +20,7 @@ if(isset($_SESSION['usuario_sesion'])) {
     }
 } else {
     echo "Para ingresar a esta plataforma debe de iniciar sesión";
+    header("Location: ".$URL."/login/index.php");
 
 }
 

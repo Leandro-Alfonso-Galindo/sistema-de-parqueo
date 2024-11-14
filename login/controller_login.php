@@ -27,7 +27,7 @@ if(($usuario_user == $email_tabla) && ($password_user == $password_tabla))
     <div class="alert alert-success" role="alert">
     Usuario Correcto
     </div>
-    <script>location.href = "principal.php";</script>
+    <script>location.href = "<?php echo $URL;?>/principal.php";</script>
     <?php
     $_SESSION['usuario_sesion'] = $email_tabla;
 } else {
