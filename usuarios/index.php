@@ -26,13 +26,45 @@ include('../layout/admin/datos_usuario_sesion.php');
 
     <br><h2>Listado de Usuarios</h2>
 
-    <table border="1" class="table table-bordered table-sm table-striped">
+    
+    <script>
+      $(document).ready(function() {
+          $('#table_id').DataTable( {
+              "pageLength": 5,
+              "language": {
+                  "emptyTable": "No hay información",
+                  "info": "Mostrando _START_ a _END_ de _TOTAL_ Usuarios",
+                  "infoEmpty": "Mostrando 0 a 0 de 0 Usuarios",
+                  "infoFiltered": "(Filtrado de _MAX_ total Usuarios)",
+                  "infoPostFix": "",
+                  "thousands": ",",
+                  "lengthMenu": "Mostrar _MENU_ Usuarios",
+                  "loadingRecords": "Cargando...",
+                  "processing": "Procesando...",
+                  "search": "Buscador:",
+                  "zeroRecords": "Sin resultados encontrados",
+                  "paginate": {
+                      "first": "Primero",
+                      "last": "Ultimo",
+                      "next": "Siguiente",
+                      "previous": "Anterior"
+                  }
+              }
+          });
+      } );
+    </script>
+    
 
-      <th><center>Nro</center></th>
-      <th>Nombre de Usuarios</th>
-      <th>Email</th>
-      <th><center>Acción</center></th>    
+    <table id="table_id" border="1" class="table table-bordered table-sm table-striped">
+
+      <thead>
+        <th><center>Nro</center></th>
+        <th>Nombre de Usuarios</th>
+        <th>Email</th>
+        <th><center>Acción</center></th>   
+      </thead> 
       
+      <tbody>
       <?php 
       $contador = 0;
       $query_usuario = $pdo->prepare("SELECT * FROM tb_usuarios WHERE estado = '1'");
@@ -63,6 +95,7 @@ include('../layout/admin/datos_usuario_sesion.php');
       <?php
       }
       ?>
+      </tbody>
 
     </table>
 

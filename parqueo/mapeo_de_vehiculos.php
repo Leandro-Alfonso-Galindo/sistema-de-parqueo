@@ -24,16 +24,46 @@ include('../layout/admin/datos_usuario_sesion.php');
 
   <div class="container">
 
-    <br><h2>Listado de Roles</h2>
+    <br><h2>Listado de Espacios</h2>
+
+    <script>
+      $(document).ready( function () {
+          $('#table_id').DataTable( {
+                "pageLength": 5,
+                "language": {
+                    "emptyTable": "No hay información",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ Espacios",
+                    "infoEmpty": "Mostrando 0 a 0 de 0 Espacios",
+                    "infoFiltered": "(Filtrado de _MAX_ total Espacios)",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ Espacios",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscador:",
+                    "zeroRecords": "Sin resultados encontrados",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Ultimo",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                }
+          });
+      } );
+    </script>
 
     <div class="row">
         <div class="col-md-6">
-            <table border="1" class="table table-bordered table-sm table-striped">
+            <table id="table_id" border="1" class="table table-bordered table-sm table-striped">
 
+                <thead>
                 <th><center>Nro</center></th>
                 <th>Nro_Espacio</th>
-                <th><center>Acción</center></th>    
+                <th><center>Acción</center></th>
+                </thead>    
 
+                <tbody>
                 <?php 
                 $contador = 0;
                 $query_mapeos = $pdo->prepare("SELECT * FROM tb_mapeos WHERE estado = '1'");
@@ -61,6 +91,7 @@ include('../layout/admin/datos_usuario_sesion.php');
                 <?php
                 }
                 ?>
+                </tbody>
 
             </table>
         </div>
